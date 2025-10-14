@@ -15,7 +15,7 @@ namespace GymManagementBLL.ViewModels.SessionViewModel
         public string TrainerName { get; set; } = null!;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public int Capaicty { get; set; }
+        public int Capacity { get; set; }
         public int AvailableSlots { get; set; }
 
         #region Computed Properties
