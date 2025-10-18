@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementDAL.Repositories.Classes
 {
-    internal class SessionRepository : GenericRepository<Session>, ISessionRepository
+    public class SessionRepository : GenericRepository<Session>, ISessionRepository
     {
         private readonly GymDbContext _dbContext;
 
@@ -21,7 +21,7 @@ namespace GymManagementDAL.Repositories.Classes
         public IEnumerable<Session> GetAllSessionsWithTrainerAndCategories()
         {
             return _dbContext.Sessions.Include(X => X.SessionTrainer)
-                                      .Include(X => X.Category)
+                                      .Include(X => X.Category) // changed
                                       .ToList();
         }
 
@@ -33,7 +33,7 @@ namespace GymManagementDAL.Repositories.Classes
         public Session? GetSessionByIdWithTrainerAndCategories(int Id)
         {
             return _dbContext.Sessions.Include(X => X.SessionTrainer)
-                                      .Include(X => X.Category)
+                                      .Include(X => X.Category) // changed
                                       .FirstOrDefault(X => X.Id == Id);
         }
     }

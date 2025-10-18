@@ -8,8 +8,6 @@ namespace GymManagementDAL.Entities
 {
     public class Session : BaseEntity
     {
-        internal object Category;
-
         public string Description { get; set; } = null!;
         public int Capacity { get; set; }
         public DateTime StartDate { get; set; }
@@ -19,7 +17,7 @@ namespace GymManagementDAL.Entities
 
         #region Category - Session
         public int CategoryId { get; set; }
-        public Category category { get; set; } = null!;
+        public Category Category { get; set; } = null!;
         #endregion
 
         #region Trainer - Session

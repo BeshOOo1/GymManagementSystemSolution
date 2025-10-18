@@ -2,7 +2,7 @@
 
 namespace GymManagementBLL.ViewModels.SessionViewModel
 {
-	public class CreateSessionViewModel
+
 	public class CreateSessionViewModel
 	{
 		[Required(ErrorMessage = "Description is required")]
