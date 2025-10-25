@@ -11,9 +11,9 @@ namespace GymManagementBLL.ViewModels.TrainerViewModel
 {
     public class CreateTrainerViewModel
     {
-        [Required(ErrorMessage ="Name is Required")]
+        [Required(ErrorMessage = "Name is Required")]
         [RegularExpression(@"^[a-zA-Z\s]+$", ErrorMessage = "Name Can Contain only Letters And Spaces")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = "Email is Required")]
         [DataType(DataType.EmailAddress)]
