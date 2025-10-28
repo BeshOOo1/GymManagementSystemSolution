@@ -21,7 +21,7 @@ namespace GymManagementDAL.Entities
     [Owned]
    public class Address
     {
-        public int BildingNumber { get; set; }
+        public int BuildingNumber { get; set; }
         public string Street { get; set; }  = null!;
         public string City { get; set; } = null!;
     }

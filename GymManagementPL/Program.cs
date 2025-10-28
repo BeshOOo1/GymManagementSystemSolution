@@ -6,6 +6,7 @@ using GymManagementDAL.Data.DataSeed;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Classes;
 using GymManagementDAL.Repositories.Interfaces;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace GymManagementPL
@@ -36,6 +37,9 @@ namespace GymManagementPL
             builder.Services.AddAutoMapper(X => X.AddProfile(new MappingProfile()));
             builder.Services.AddScoped<IAnalyticService,AnalyticService>();
             builder.Services.AddScoped<IMemberService, MemberService>();
+            builder.Services.AddScoped<ITrainerService, TrainerService>();
+            builder.Services.AddScoped<IPlanService, PlanService>();
+            builder.Services.AddScoped<ISessionService, SessionService>();
             
             var app = builder.Build();
 

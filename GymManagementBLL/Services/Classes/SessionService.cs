@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class SessionService : ISessionService
+    public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -110,6 +110,7 @@ namespace GymManagementBLL.Services.Classes
         {
             try
             {
+                
                 var Session = _unitOfWork.SessionRepository.GetById(sessionId);
 
                 if (!IsSessionAvailableForRemoving(Session!)) return false;
@@ -117,10 +118,24 @@ namespace GymManagementBLL.Services.Classes
                 _unitOfWork.SessionRepository.Delete(Session!);
                 return _unitOfWork.SavaChanges() > 0;
             }
-            catch
+            catch 
             {
                 return false;
             }
+        }
+
+        public IEnumerable<TrainerSelectViewModel> GetAllTrainersForDropDown()
+        {
+            var Trainers = _unitOfWork.GetRepository<Trainer>().GetAll();
+
+            return _mapper.Map<IEnumerable<Trainer>, IEnumerable<TrainerSelectViewModel>>(Trainers);
+        }
+
+        public IEnumerable<CategorySelectViewModel> GetAllCategoryForDropDown()
+        {
+            var Categories = _unitOfWork.GetRepository<Category>().GetAll();
+
+            return _mapper.Map<IEnumerable<Category>, IEnumerable<CategorySelectViewModel>>(Categories);
         }
 
         #region Helpers
@@ -147,8 +162,8 @@ namespace GymManagementBLL.Services.Classes
 
             var HasActiveBooking = _unitOfWork.SessionRepository.GetcountOfBookedSlots(session.Id) > 0;
             
-            if(HasActiveBooking) return true;
-            return false;
+            if(HasActiveBooking) return false;
+            return true;
         }
         private bool IsSessionAvailableForRemoving(Session session)
         {
@@ -163,6 +178,8 @@ namespace GymManagementBLL.Services.Classes
             if(HasActiveBooking) return true;
             return false;
         }
+
+
 
 
 

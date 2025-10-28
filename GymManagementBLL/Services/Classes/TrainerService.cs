@@ -36,7 +36,7 @@ namespace GymManagementBLL.Services.Classes
                     DateOfBirth = createTrainer.DateOfBirth,
                     Address = new Address()
                     {
-                        BildingNumber = createTrainer.BuildNumber,
+                        BuildingNumber = createTrainer.BuildingNumber,
                         City = createTrainer.City,
                         Street = createTrainer.Street,
                     }
@@ -76,7 +76,9 @@ namespace GymManagementBLL.Services.Classes
                 Name = Trainer.Name,
                 Email = Trainer.Email,
                 Phone = Trainer.Phone,
-                Specialties = Trainer.Specialties.ToString()
+                Specialties = Trainer.Specialties.ToString(),
+                DateOfBirth = Trainer.DateOfBirth.ToShortDateString(),
+                Address = $"{Trainer.Address.BuildingNumber} - {Trainer.Address.Street} - {Trainer.Address.City}"
             };
 
         }
@@ -93,7 +95,7 @@ namespace GymManagementBLL.Services.Classes
                 Phone = Trainer.Phone,
                 City = Trainer.Address.City,
                 Street = Trainer.Address.Street,
-                BuildNumber = Trainer.Address.BildingNumber,
+                BuildingNumber = Trainer.Address.BuildingNumber,
                 Specialties = Trainer.Specialties
             };
 
@@ -114,11 +116,18 @@ namespace GymManagementBLL.Services.Classes
         {
             var Repo = _unitOfWork.GetRepository<Trainer>();
             var TrainerToUpdate = Repo.GetById(trainerId);
-            if (TrainerToUpdate is null || IsEmailExist(updateTrainer.Email) || IsPhoneExist(updateTrainer.Phone)) return false;
+
+            var EmailExist = _unitOfWork.GetRepository<Trainer>().GetAll(
+                m => m.Email == updateTrainer.Email && m.Id != trainerId).Any();
+
+            var PhoneExist = _unitOfWork.GetRepository<Trainer>().GetAll(
+                m => m.Phone == updateTrainer.Phone && m.Id != trainerId).Any();
+
+            if (TrainerToUpdate is null || EmailExist || PhoneExist) return false;
 
             TrainerToUpdate.Email = updateTrainer.Email;
             TrainerToUpdate.Phone = updateTrainer.Phone;
-            TrainerToUpdate.Address.BildingNumber = updateTrainer.BuildNumber;
+            TrainerToUpdate.Address.BuildingNumber = updateTrainer.BuildNumber;
             TrainerToUpdate.Address.City = updateTrainer.City;
             TrainerToUpdate.Address.Street = updateTrainer.Street;
             TrainerToUpdate.Specialties = updateTrainer.Specialties;

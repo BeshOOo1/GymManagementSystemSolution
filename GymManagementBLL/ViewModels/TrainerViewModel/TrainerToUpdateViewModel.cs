@@ -25,7 +25,7 @@ namespace GymManagementBLL.ViewModels.TrainerViewModel
 
         [Required(ErrorMessage = "Building Number is Required")]
         [Range(1, int.MaxValue, ErrorMessage = "Building Number Must be greater than 0")]
-        public int BuildNumber { get; set; }
+        public int BuildingNumber { get; set; }
 
         [Required(ErrorMessage = "Street is Required")]
         [StringLength(150, MinimumLength = 2, ErrorMessage = "Street Must be Between 2 And 150 Char")]
