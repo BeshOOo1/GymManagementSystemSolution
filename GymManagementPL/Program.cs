@@ -1,4 +1,5 @@
 using GymManagementBLL;
+using GymManagementBLL.Services.AttachmentService;
 using GymManagementBLL.Services.Classes;
 using GymManagementBLL.Services.Interfaces;
 using GymManagementDAL.Data.Context;
@@ -6,8 +7,10 @@ using GymManagementDAL.Data.DataSeed;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Classes;
 using GymManagementDAL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 namespace GymManagementPL
 {
@@ -21,17 +24,9 @@ namespace GymManagementPL
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<GymDbContext>(options =>
             {
-                //options.UseSqlServer("Server = DESKTOP-5K15M44;Database = GymManagementDb;Trusted_Connection = True;TrustServerCertificate = True");
-
-                //options.UseSqlServer(builder.Configuration.GetSection("ConnectionStrings")["DefaultConnection"]);
-                //options.UseSqlServer(builder.Configuration["ConnectionStrings:DefaultConnection"]);
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            //builder.Services.AddScoped<GenericRepository<Member>, GenericRepository<Member>>();    
-            //builder.Services.AddScoped(typeof(GenericRepository<>), typeof(GenericRepository<>));
-            //builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            //builder.Services.AddScoped<IPlanRepository, PlanRepository>();
             builder.Services.AddScoped<IUnitOfWork,UnitOfWork>();
             builder.Services.AddScoped<ISessionRepository , SessionRepository>();
             builder.Services.AddAutoMapper(X => X.AddProfile(new MappingProfile()));
@@ -40,17 +35,36 @@ namespace GymManagementPL
             builder.Services.AddScoped<ITrainerService, TrainerService>();
             builder.Services.AddScoped<IPlanService, PlanService>();
             builder.Services.AddScoped<ISessionService, SessionService>();
-            
-            var app = builder.Build();
+            builder.Services.AddScoped<IAttachmentService, AttachmentService>();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(Config =>
+            {
+                Config.Password.RequiredLength = 6;
+                Config.Password.RequireLowercase = true;
+            }).AddEntityFrameworkStores<GymDbContext>();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+            });
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
+            //builder.Services.AddIdentityCore<ApplicationUser>()
+            //    .AddEntityFrameworkStores<GymDbContext>();
+
+            var app = builder.Build();
+            
             #region Seed Data - Migrate Database
 
             using var Scoped = app.Services.CreateScope();
             var dbContext = Scoped.ServiceProvider.GetRequiredService<GymDbContext>();
+            var roleManager = Scoped.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = Scoped.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var PendingMigrations = dbContext.Database.GetPendingMigrations();
             if (PendingMigrations?.Any() ?? false)
                 dbContext.Database.Migrate();
+
             GymDbContextDataSeeding.SeedData(dbContext);
+            IdentityDbContextSeeding.SeedData(roleManager, userManager);
             #endregion
 
             // Configure the HTTP request pipeline.
@@ -63,19 +77,14 @@ namespace GymManagementPL
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();
-            app.MapControllerRoute(
-                name: "Trainers",
-                pattern: "coach/{action}",
-                defaults: new {controller = "Trainer" , action = "Index" })
-                .WithStaticAssets();
            
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id:int?}")
+                pattern: "{controller=Account}/{action=Login}/{id:int?}")
                 .WithStaticAssets();
 
             app.Run();

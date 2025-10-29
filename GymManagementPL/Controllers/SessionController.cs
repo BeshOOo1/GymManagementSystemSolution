@@ -4,11 +4,13 @@ using GymManagementBLL.Services.Interfaces;
 using GymManagementBLL.ViewModels.PlanViewModel;
 using GymManagementBLL.ViewModels.SessionViewModel;
 using GymManagementDAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace GymManagementPL.Controllers
 {
+    [Authorize]
     public class SessionController : Controller
     {
         private readonly ISessionService _sessionService;
